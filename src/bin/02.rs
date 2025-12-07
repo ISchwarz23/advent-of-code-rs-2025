@@ -1,12 +1,15 @@
 use std::ops::RangeInclusive;
+use rayon::prelude::*;
 
 advent_of_code::solution!(2);
 
 pub fn part_one(input: &str) -> Option<u64> {
     let result = input
         .split(',')
+        .collect::<Vec<_>>()
+        .into_par_iter()
         .map(|range_str| to_range(range_str))
-        .flat_map(|range| range.into_iter().filter(|i| is_invalid_id_part1(i)))
+        .flat_map(|range| range.into_par_iter().filter(|i| is_invalid_id_part1(i)))
         .sum();
     Some(result)
 }
@@ -14,19 +17,25 @@ pub fn part_one(input: &str) -> Option<u64> {
 pub fn part_two(input: &str) -> Option<u64> {
     let result = input
         .split(',')
+        .collect::<Vec<_>>()
+        .into_par_iter()
         .map(|range_str| to_range(range_str))
-        .flat_map(|range| range.into_iter().filter(|i| is_invalid_id_part2(i)))
+        .flat_map(|range| range.into_par_iter().filter(|i| is_invalid_id_part2(i)))
         .sum();
     Some(result)
 }
 
 fn is_invalid_id_part1(id: &u64) -> bool {
-    split_into_n_equal_parts_and_compare(&id.to_string(), 2)
+    let id_string = id.to_string();
+    let id_bytes = id_string.as_bytes();
+    split_into_n_equal_parts_and_compare(id_bytes, 2)
 }
 
 fn is_invalid_id_part2(id: &u64) -> bool {
+    let id_string = id.to_string();
+    let id_bytes = id_string.as_bytes();
     for len in 2..=id.to_string().len() {
-        if split_into_n_equal_parts_and_compare(&id.to_string(), len) {
+        if split_into_n_equal_parts_and_compare(id_bytes, len) {
             return true;
         }
     }
@@ -40,15 +49,13 @@ fn to_range(range_str: &str) -> RangeInclusive<u64> {
     first..=last
 }
 
-fn split_into_n_equal_parts_and_compare(s: &String, n: usize) -> bool {
+fn split_into_n_equal_parts_and_compare(id_bytes: &[u8], n: usize) -> bool {
     if n == 0 {
         return false;
     }
 
-    let chars: Vec<char> = s.chars().collect();
-    let len = chars.len();
-
     // length must be divisible by n
+    let len = id_bytes.len();
     if len % n != 0 {
         return false;
     }
@@ -56,13 +63,13 @@ fn split_into_n_equal_parts_and_compare(s: &String, n: usize) -> bool {
     let part_len = len / n;
 
     // take the first part as reference
-    let reference = &chars[0..part_len];
+    let reference = &id_bytes[0..part_len];
 
     // check all parts
     for i in 1..n {
         let start = i * part_len;
         let end = start + part_len;
-        if &chars[start..end] != reference {
+        if &id_bytes[start..end] != reference {
             return false;
         }
     }
