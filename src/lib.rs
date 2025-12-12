@@ -166,4 +166,106 @@ pub mod vector {
         DIR_DOWN,
         DIR_RIGHT_DOWN,
     ];
+
+    #[derive(Clone, Debug, Hash, Eq, PartialEq)]
+    pub struct Vector3d {
+        pub x: i64,
+        pub y: i64,
+        pub z: i64,
+    }
+
+    impl Add for Vector3d {
+        type Output = Vector3d;
+
+        fn add(self, other: Self) -> Vector3d {
+            Vector3d {
+                x: self.x + other.x,
+                y: self.y + other.y,
+                z: self.z + other.z,
+            }
+        }
+    }
+
+    impl Add for &Vector3d {
+        type Output = Vector3d;
+
+        fn add(self, other: Self) -> Self::Output {
+            Vector3d {
+                x: self.x + other.x,
+                y: self.y + other.y,
+                z: self.z + other.z,
+            }
+        }
+    }
+
+    impl Sub for Vector3d {
+        type Output = Vector3d;
+
+        fn sub(self, other: Self) -> Self::Output {
+            Vector3d {
+                x: self.x - other.x,
+                y: self.y - other.y,
+                z: self.z - other.z,
+            }
+        }
+    }
+
+    impl Sub for &Vector3d {
+        type Output = Vector3d;
+
+        fn sub(self, other: Self) -> Self::Output {
+            Vector3d {
+                x: self.x - other.x,
+                y: self.y - other.y,
+                z: self.z - other.z,
+            }
+        }
+    }
+
+    impl Mul<i64> for Vector3d {
+        type Output = Vector3d;
+
+        fn mul(self, other: i64) -> Self::Output {
+            Vector3d {
+                x: self.x * other,
+                y: self.y * other,
+                z: self.z * other
+            }
+        }
+    }
+
+    impl Mul<i64> for &Vector3d {
+        type Output = Vector3d;
+
+        fn mul(self, other: i64) -> Self::Output {
+            Vector3d {
+                x: self.x * other,
+                y: self.y * other,
+                z: self.z * other
+            }
+        }
+    }
+
+    impl Vector3d {
+        pub fn from_str(s: &str) -> Vector3d {
+            let coords: Vec<i64> = s.split(",").map(|x| x.parse().unwrap()).collect();
+            Self {
+                x: coords[0],
+                y: coords[1],
+                z: coords[2]
+            }
+        }
+        pub fn distance_to(self, other: Vector3d) -> f64 {
+            linear_distance(&self, &other)
+        }
+
+        pub fn distance_to_ref(self, other: &Vector3d) -> f64 {
+            linear_distance(&self, other)
+        }
+    }
+
+    pub fn linear_distance(first: &Vector3d, second: &Vector3d) -> f64 {
+        (((first.x - second.x).pow(2) + (first.y - second.y).pow(2) + (first.z - second.z).pow(2)) as f64).sqrt()
+    }
+
 }
