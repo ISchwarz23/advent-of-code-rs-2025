@@ -37,6 +37,12 @@ pub mod rect {
             self.y_from..=self.y_to
         }
 
+        pub fn area(&self) -> u64 {
+            let width = self.x_to - self.x_from + 1;
+            let height = self.y_to - self.y_from + 1;
+            (width * height) as u64
+        }
+
         pub fn overlaps(&self, other: &Rectangle) -> bool {
             range_inclusive_overlap(&self.x_range(), &other.x_range())
                 && range_inclusive_overlap(&self.y_range(), &other.y_range())
@@ -63,6 +69,13 @@ pub mod range {
         first.start() <= second.end() && second.start() <= first.end()
     }
 
+    pub fn range_inclusive_contains(
+        first: &RangeInclusive<i64>,
+        second: &RangeInclusive<i64>,
+    ) -> bool {
+        first.start() <= second.start() && second.end() <= first.end()
+    }
+
     pub fn range_overlap(first: &Range<i64>, second: &Range<i64>) -> bool {
         first.start < second.end && second.start < first.end
     }
@@ -75,6 +88,16 @@ pub mod vector {
     pub struct Vector2d {
         pub x: i64,
         pub y: i64,
+    }
+
+    impl Vector2d {
+        pub fn from_str(s: &str) -> Vector2d {
+            let coords: Vec<i64> = s.split(",").map(|x| x.parse::<i64>().unwrap()).collect();
+            Self {
+                x: coords[0],
+                y: coords[1],
+            }
+        }
     }
 
     impl Add for Vector2d {
@@ -229,7 +252,7 @@ pub mod vector {
             Vector3d {
                 x: self.x * other,
                 y: self.y * other,
-                z: self.z * other
+                z: self.z * other,
             }
         }
     }
@@ -241,7 +264,7 @@ pub mod vector {
             Vector3d {
                 x: self.x * other,
                 y: self.y * other,
-                z: self.z * other
+                z: self.z * other,
             }
         }
     }
@@ -252,7 +275,7 @@ pub mod vector {
             Self {
                 x: coords[0],
                 y: coords[1],
-                z: coords[2]
+                z: coords[2],
             }
         }
         pub fn distance_to(self, other: Vector3d) -> f64 {
@@ -265,7 +288,8 @@ pub mod vector {
     }
 
     pub fn linear_distance(first: &Vector3d, second: &Vector3d) -> f64 {
-        (((first.x - second.x).pow(2) + (first.y - second.y).pow(2) + (first.z - second.z).pow(2)) as f64).sqrt()
+        (((first.x - second.x).pow(2) + (first.y - second.y).pow(2) + (first.z - second.z).pow(2))
+            as f64)
+            .sqrt()
     }
-
 }
