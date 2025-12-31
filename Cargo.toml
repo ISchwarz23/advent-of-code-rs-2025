@@ -29,5 +29,6 @@ tinyjson = "2.5.1"
 regex = "1.11.1"
 once_cell = "1.19.0"
 rayon = "1.10"
+z3 = "0.19.7"
 
 # Solution dependencies
